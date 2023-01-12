@@ -1,40 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Installs Nginx
 
-# Update package list
 apt-get update
-
-# Install Nginx
 apt-get install -y nginx
 
-# Stop Nginx service
-service nginx stop
+mkdir /etc/nginx/html
+touch /etc/nginx/html/index.html
+echo "Hello World!" > /etc/nginx/html/index.html
+printf %s "server {
+     listen      80 default_server;
+     listen      [::]:80 default_server;
+     root        /etc/nginx/html;
+     index       index.html index.htm;
+}
+" > /etc/nginx/sites-available/default
 
-# Remove default configuration
-rm /etc/nginx/sites-enabled/default
-
-# Create a new configuration file
-touch /etc/nginx/sites-available/web-01
-
-# Add the following configuration to the file
-echo "server {
-        listen 80;
-        root /var/www/html;
-        index index.html;
-        server_name web-01;
-
-        location / {
-                return 200 'Hello World!';
-        }
-}" > /etc/nginx/sites-available/web-01
-
-# Create a symbolic link to enable the configuration
-ln -s /etc/nginx/sites-available/web-01 /etc/nginx/sites-enabled/
-
-# Create index.html
-touch /var/www/html/index.html
-
-# Add the string "Hello World!" to index.html
-echo "Hello World!" > /var/www/html/index.html
-
-# Start Nginx service
-service nginx start
+service nginx restart
